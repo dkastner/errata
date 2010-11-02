@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{errata}
-  s.version = "0.2.4"
+  s.version = "0.2.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Seamus Abshere", "Andy Rossmeissl"]
-  s.date = %q{2010-09-30}
+  s.date = %q{2010-11-02}
   s.description = %q{Correct strings based on remote errata files}
   s.email = %q{seamus@abshere.net}
   s.extra_rdoc_files = [
@@ -32,8 +32,11 @@ Gem::Specification.new do |s|
      "lib/erratum/simplify.rb",
      "lib/erratum/transform.rb",
      "lib/erratum/truncate.rb",
+     "test/ascii_8bit.regex",
+     "test/errata/erratum_test.rb",
      "test/errata_test.rb",
-     "test/test_helper.rb"
+     "test/test_helper.rb",
+     "test/utf8.txt"
   ]
   s.homepage = %q{http://github.com/seamusabshere/errata}
   s.rdoc_options = ["--charset=UTF-8", "--line-numbers", "--inline-source"]
@@ -42,6 +45,7 @@ Gem::Specification.new do |s|
   s.summary = %q{Correct strings based on remote errata files}
   s.test_files = [
     "test/errata_test.rb",
+     "test/errata/erratum_test.rb",
      "test/test_helper.rb"
   ]
 
