@@ -26,28 +26,16 @@ class Errata
     
     def correct!(row, &block)
       return :skipped unless targets?(row)
-      # old_value = row[column].to_s.dup
       yield if block_given?
-      # unless name.demodulize.underscore == 'truncate' or name.demodulize.underscore == 'simplify'
-      #   puts "-" * 64
-      #   puts inspect
-      #   puts row.inspect
-      #   if row[column] != old_value
-      #     puts "#{old_value} -> #{row[column]}"
-      #   else
-      #     puts "no change"
-      #   end
-      #   puts
-      # end
       :corrected
     end
 
     def expression_matches?(row)
-      return true if matching_expression.blank? or column.blank?
-      if matching_expression.is_a?(Regexp)
-        matching_expression.match(row[column].to_s)
+      return true if @matching_expression.nil? or column.blank?
+      if @matching_expression.is_a?(Regexp)
+        @matching_expression.match(row[column].to_s)
       else
-        row[column].to_s.include?(matching_expression)
+        row[column].to_s.include?(@matching_expression)
       end
     end
     
@@ -56,22 +44,27 @@ class Errata
     end
     
     def set_matching_expression(options = {})
-      if options[:x].blank?
-        @matching_expression = nil
-      elsif options[:x].start_with?('/')
-        if options[:x].end_with?('i')
+      expression = options[:x]
+      return nil if expression.blank? 
+
+      if expression.encoding == Encoding::ASCII_8BIT # ASCII-8BIT is Ruby 1.9's failsafe encoding
+        expression = expression.force_encoding('UTF-8') 
+      end
+
+      if expression.start_with?('/')
+        if expression.end_with?('i')
           ci = true
-          options[:x] = options[:x].chop
+          expression = expression.chop
         else
           ci = false
         end
-        @matching_expression = Regexp.new(options[:x].gsub(/\A\/|\/\z/, ''), ci)
-      elsif /\Aabbr\((.*)\)\z/.match(options[:x])
+        @matching_expression = Regexp.new(expression.gsub(/\A\/|\/\z/, ''), ci)
+      elsif /\Aabbr\((.*)\)\z/.match(expression)
         @matching_expression = Regexp.new('(\A|\s)' + $1.split(/(\w\??)/).reject { |a| a == '' }.join('\.?\s?') + '\.?([^\w\.]|\z)', true)
       elsif options[:prefix] == true
-        @matching_expression = Regexp.new('\A\s*' + Regexp.escape(options[:x]), true)
+        @matching_expression = Regexp.new('\A\s*' + Regexp.escape(expression), true)
       else
-        @matching_expression = options[:x]
+        @matching_expression = expression
       end
     end
   end
